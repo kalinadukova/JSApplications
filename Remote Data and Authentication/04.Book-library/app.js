@@ -80,7 +80,7 @@ async function submitBook(ev) {
 
 //Edit book
 
-async function submitEditedBook(ev) {
+function submitEditedBook(ev) {
     ev.preventDefault();
 
     const formData = new FormData(editForm);
@@ -92,7 +92,7 @@ async function submitEditedBook(ev) {
         title: formData.get('title')
     };
 
-    await updateBookById(id, book);
+    updateBookById(id, book);
 
     const tableRow = document.getElementById(id);
     const tableColumns = tableRow.children;
@@ -104,7 +104,7 @@ async function submitEditedBook(ev) {
     mainForm.style.display = 'block';
 }
 
-async function editBook(ev) {
+function editBook(ev) {
     editForm.style.display = 'block';
     mainForm.style.display = 'none';
 
@@ -137,12 +137,12 @@ async function updateBookById(id, book) {
 
 //Delete book
 
-async function deleteBook(ev) {
+function deleteBook(ev) {
     const btn = ev.target;
     const tableRow = btn.parentNode.parentNode;
     const id = tableRow.id;
 
-    await deleteBookById(id);
+    deleteBookById(id);
 
     tableRow.remove();
 
