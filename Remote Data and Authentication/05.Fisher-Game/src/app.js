@@ -8,10 +8,6 @@ window.addEventListener('DOMContentLoaded', () => {
         document.querySelector('.email span').textContent = userData.email;
         document.querySelector('#addForm fieldset button').disabled = false;
 
-        //Logout button doesn't work - throws error 403 - Invalid access token
-        const logoutBtn = document.getElementById('logout');
-        logoutBtn.addEventListener('click', onLogout);
-
     } else {
         document.getElementById('user').style.display = 'none';
         document.querySelector('#addForm fieldset .add').disabled = true;
@@ -22,6 +18,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
     const addForm = document.getElementById('addForm');
     addForm.addEventListener('submit', addCatch);
+
+    const logoutBtn = document.getElementById('logout');
+    logoutBtn.addEventListener('click', onLogout);
 
 });
 
@@ -116,9 +115,6 @@ function createCatch(item) {
 }
 
 async function onLogout() {
-    console.log(userData);
-    console.log(userData.token);
-
     const url = 'http://localhost:3030/users/logout';
     const res = await fetch(url, {
         method: 'get',
@@ -127,7 +123,7 @@ async function onLogout() {
         }
     });
 
-    if (res.status == 200) {
+    if (res.status == 204) {
         sessionStorage.clear();
         window.location = '/index.html';
     } else {
@@ -160,7 +156,9 @@ async function deleteCatch(ev) {
 
     const res = await fetch(url, {
         method: 'delete',
-        'X-Authorization': userData.token
+        headers: {
+            'X-Authorization': userData.token
+        }
     });
 
     const data = await res.json();

@@ -42,7 +42,10 @@ async function onLogin(ev) {
             token: data.accessToken
         };
 
+        console.log(userData);
+
         sessionStorage.setItem('userData', JSON.stringify(userData));
+        console.log(sessionStorage);
         window.location = '/index.html';
 
     } catch (error) {
