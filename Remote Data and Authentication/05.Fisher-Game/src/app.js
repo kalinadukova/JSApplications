@@ -55,7 +55,6 @@ async function addCatch(ev) {
     ev.preventDefault();
 
     const formData = new FormData(ev.target);
-    console.log(formData.get('angler'));
 
     try {
         const url = 'http://localhost:3030/data/catches';
@@ -134,17 +133,32 @@ async function onLogout() {
 async function updateCatch(ev) {
     const button = ev.target;
     const id = button.dataset.id;
-    
+
+    const divElement = button.parentNode;
+    const divChildren = divElement.children;
+
+    const catchData = {
+        angler: divChildren[1].value,
+        weight: divChildren[3].value,
+        species: divChildren[5].value,
+        location: divChildren[7].value,
+        bait: divChildren[9].value,
+        captureTime: divChildren[11].value
+    };
+
     const url = `http://localhost:3030/data/catches/${id}`;
     const res = await fetch(url, {
-        method: 'post',
+        method: 'put',
         headers: {
             'Content-Type': 'application/json',
             'X-Authorization': userData.token
-        }
+        },
+        body: JSON.stringify(catchData)
     });
 
     const data = await res.json();
+
+    loadAllCatches();
 
 }
 
