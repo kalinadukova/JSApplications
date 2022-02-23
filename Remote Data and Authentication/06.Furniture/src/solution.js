@@ -7,6 +7,8 @@ window.addEventListener('DOMContentLoaded', () => {
   if (userData != null) {
     console.log(userData);
 
+    loadAllFurniture();
+
     [...document.querySelectorAll('[type="checkbox"]')].map(el => el.disabled = false);
 
     document.getElementById('createProduct').addEventListener('submit', onCreate);
@@ -14,8 +16,10 @@ window.addEventListener('DOMContentLoaded', () => {
     document.getElementById('buy').addEventListener('click', onBuy);
 
     document.getElementById('logoutBtn').addEventListener('click', onLogout);
+
+    document.querySelector('.orders button').addEventListener('click', onAllOrders);
   } else {
-    
+    loadAllFurniture();
   }
 });
 
@@ -52,8 +56,6 @@ async function onCreate(ev) {
 
     const data = await res.json();
 
-    console.log(data);
-
     ev.target.reset();
 
     addToTable(data);
@@ -63,8 +65,65 @@ async function onCreate(ev) {
   }
 }
 
-function onBuy() {
-  console.log('buy');
+async function onBuy() {
+  const checkboxBtn = [...document.querySelectorAll('[type="checkbox"]')];
+
+  const products = [];
+
+  checkboxBtn.forEach(element => {
+    if (element.checked) {
+      products.push(element.id);
+    }
+  })
+
+  const url = 'http://localhost:3030/data/orders';
+
+  const options = {
+    method: 'post',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Authorization': userData.token
+    },
+    body: JSON.stringify({
+      products: products
+    })
+  };
+
+  const res = await fetch(url, options);
+  const data = await res.json();
+  console.log(data);
+}
+
+
+async function onAllOrders(ev) {
+  const allOrdersDiv = document.querySelector('.orders');
+  const divChildren = allOrdersDiv.children;
+  
+  const boughtSpan = divChildren[0].children[0];
+  const priceSpan = divChildren[1].children[0];
+
+  let boughtFurniture = [];
+  let sum = 0;
+
+  const url = 'http://localhost:3030/data/orders';
+  const res = await fetch(url);
+  const data = await res.json();
+
+  for (const element of data) {
+    if (element._ownerId == userData.id) {
+      element.products.forEach(id => {
+        let tableRow = document.getElementsByClassName(`${id}`)[0];
+        let name = tableRow.children[1].children[0].textContent;
+        let price = Number(tableRow.children[2].children[0].textContent);
+        sum += price;
+        boughtFurniture.push(name);
+      });
+      
+    }
+
+    boughtSpan.textContent = boughtFurniture.join(', ');
+    priceSpan.textContent = sum;
+  }
 }
 
 async function onLogout() {
@@ -86,7 +145,7 @@ async function onLogout() {
 
 function addToTable(data) {
   tableBody.innerHTML += `
-    <tr>
+    <tr class="${data._id}">
     <td>
         <img
             src="${data.img}">
@@ -101,8 +160,16 @@ function addToTable(data) {
         <p>${data.factor}</p>
     </td>
     <td>
-        <input type="checkbox"/>
+        <input type="checkbox" id="${data._id}"/>
     </td>
     </tr>
     `;
+}
+
+async function loadAllFurniture() {
+  const url = 'http://localhost:3030/data/furniture'; 
+  const res = await fetch(url);
+  const data = await res.json();
+
+  data.forEach(element => addToTable(element));
 }
