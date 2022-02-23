@@ -31,15 +31,23 @@ async function onRegister(ev) {
 
     try {
         const res = await fetch(url, options);
-        const data = await res.json();
 
         if (res.status != 200) {
             const error = await res.json();
             throw new Error(error.message);
         }
         
-        sessionStorage.setItem('authToken', data.accessToken);
+        const userData = {
+            email: data.email,
+            id: data._id,
+            token: data.accessToken
+        };
+
+        const data = await res.json();
+
+        sessionStorage.setItem('userData', JSON.stringify(userData));
         window.location = '/index.html';
+
     }
     catch (error) {
         alert(error.message);

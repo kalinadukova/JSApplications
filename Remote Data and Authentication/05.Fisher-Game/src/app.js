@@ -158,8 +158,6 @@ async function updateCatch(ev) {
 
     const data = await res.json();
 
-    loadAllCatches();
-
 }
 
 async function deleteCatch(ev) {
