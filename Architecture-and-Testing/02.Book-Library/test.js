@@ -27,10 +27,10 @@ const mockData = {
 };
 
 describe('E2E tests', async function () {
-    this.timeout(60000);
+    // this.timeout(2000);
 
     before(async () => { browser = await chromium.launch(); });
-    before(async () => { browser = await chromium.launch({ headless: false, slowMo: 2000 }); });
+    before(async () => { browser = await chromium.launch({ headless: false }); });
     after(async () => { await browser.close(); });
     beforeEach(async () => { page = await browser.newPage(); });
     afterEach(async () => { await page.close(); });
@@ -100,20 +100,31 @@ describe('E2E tests', async function () {
 
         await page.waitForSelector('text=Harry Potter');
         // await page.$$eval('tr', (rows) => rows.map(r => r.textContent.trim()));
-        await page.click('text=Delete');
+        await page.pause();
+
+
+        await page.click('.deleteBtn');
+        await page.pause();
+
 
         // page.on('Are you sure you want to delete this book?', confirm => confirm.accept());
 
+        // page.on('console', msg => console.log('hello'));
+
+        // await this.page.evaluate(() => window.confirm = function(){return true;});
+
         await page.on('dialog', async dialog => {
             console.log(dialog.message());
+            console.log('type', dialog.type());
             await dialog.accept();
         });
 
-        // await page.evaluate(() => {
-        //     confirm('are you sure');
-        // });
+        await page.evaluate(() => {
+            confirm('are you sure')
+        });
 
-        expect(1).to.equal(1);
+        browser.close();
+        // expect(1).to.equal(1);
 
         // await page.waitForResponse(response => response.status() == 200);
     });
