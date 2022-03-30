@@ -1,4 +1,4 @@
-import { clearUserData, getUserData, setUserData } from "../util.js";
+import { getUserData, setUserData, clearUserData } from "../util.js";
 
 const host = "http://localhost:3030";
 
@@ -23,43 +23,43 @@ async function request(url, method, data) {
     if (res.ok == false) {
       if (res.status == 403) {
         clearUserData();
-        window.history.go(0);
       }
-      const error = await res.json();
-      throw new Error(error.message);
+      const err = await res.json();
+      throw new Error(err.message);
     }
 
-    if (res.status === 204) {
+    if (res.status == 204) {
       return res;
     } else {
-      return res.json();
+      return await res.json();
     }
   } catch (error) {
-    alert(error.message);
+    // alert(error.message);
     throw error;
   }
 }
 
 async function get(url) {
-  return request(url, "get");
+  return await request(url, "get");
 }
 
 async function post(url, data) {
-  return request(url, "post", data);
+  return await request(url, "post", data);
 }
 
 async function put(url, data) {
-  return request(url, "put", data);
+  return await request(url, "put", data);
 }
 
 async function del(url) {
-  return request(url, "delete");
+  return await request(url, "delete");
 }
 
 async function login(data) {
   const res = await post("/users/login", data);
   const userData = {
     email: res.email,
+    username: res.username,
     id: res._id,
     token: res.accessToken,
   };
@@ -71,6 +71,7 @@ async function register(data) {
   const res = await post("/users/register", data);
   const userData = {
     email: res.email,
+    username: res.username,
     id: res._id,
     token: res.accessToken,
   };

@@ -1,0 +1,6 @@
+images/
+server/
+tests/
+node_modules/
+package.json
+package-lock.json
