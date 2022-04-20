@@ -2,5 +2,3 @@ images/
 node_modules/
 tests/
 server/
-package.json
-package-lock.json
